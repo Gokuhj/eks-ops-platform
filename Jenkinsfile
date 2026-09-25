@@ -2,18 +2,34 @@ pipeline {
     agent any
 
     stages {
-        stage('Checkout Test') {
+        stage('Checkout') {
             steps {
-                echo 'GitHub checkout successful!'
+                echo 'Source code checked out successfully'
             }
         }
 
-        stage('Environment Test') {
+        stage('Build Docker Image') {
             steps {
-                bat 'git --version'
-                bat 'docker --version'
-                bat 'kubectl version --client'
+                dir('app') {
+                    bat 'docker build -t devops-app:jenkins .'
+                }
             }
+        }
+
+        stage('Verify Docker Image') {
+            steps {
+                bat 'docker images devops-app'
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'Docker image built successfully!'
+        }
+
+        failure {
+            echo 'Docker build failed!'
         }
     }
 }
