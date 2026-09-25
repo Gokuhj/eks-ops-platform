@@ -16,20 +16,36 @@ pipeline {
             }
         }
 
-        stage('Verify Docker Image') {
+        stage('Load Image into Minikube') {
             steps {
-                bat 'docker images devops-app'
+                bat 'minikube image load devops-app:jenkins'
+            }
+        }
+
+        stage('Deploy to Kubernetes') {
+            steps {
+                bat 'kubectl apply -f k8s/deployment.yaml'
+                bat 'kubectl apply -f k8s/service.yaml'
+                bat 'kubectl set image deployment/devops-app devops-app=devops-app:jenkins'
+            }
+        }
+
+        stage('Verify Deployment') {
+            steps {
+                bat 'kubectl rollout status deployment/devops-app --timeout=120s'
+                bat 'kubectl get pods'
+                bat 'kubectl get svc'
             }
         }
     }
 
     post {
         success {
-            echo 'Docker image built successfully!'
+            echo 'CI/CD deployment successful!'
         }
 
         failure {
-            echo 'Docker build failed!'
+            echo 'CI/CD deployment failed!'
         }
     }
 }
