@@ -1,6 +1,11 @@
 pipeline {
     agent any
 
+     environment {
+        MINIKUBE_HOME = 'C:\\Users\\user'
+        KUBECONFIG = 'C:\\Users\\user\\.kube\\config'
+    }
+
     stages {
         stage('Checkout') {
             steps {
