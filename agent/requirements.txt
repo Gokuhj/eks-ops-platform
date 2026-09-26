@@ -1,0 +1,4 @@
+langchain
+langchain-aws
+boto3
+langchain-ollama
